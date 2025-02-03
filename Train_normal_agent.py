@@ -64,6 +64,8 @@ for episode in tqdm(range(n_episodes)):
         total_reward += reward
         moves +=1
         agent.replay(batch_size)
+        print(env.describe_game_state())
+
     reward_per_episode.append(total_reward)
     step_per_episode.append(moves)
     epsilon_value.append(agent.epsilon)
