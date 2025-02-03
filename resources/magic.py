@@ -7,7 +7,7 @@
 
 
 
-import random
+import numpy as np
 
 
 class Spell:
@@ -20,6 +20,10 @@ class Spell:
     def generate_damage(self):
         low = self.dmg - 15
         high = self.dmg + 15
-        return random.randrange(low, high)
+
+        # print(f"Low: {low}")
+        # print(f"High: {high}")
+
+        return np.random.randint(low, high) 
 
 

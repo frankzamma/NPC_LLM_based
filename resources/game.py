@@ -194,6 +194,11 @@ class Person:
 
             pct = self.hp / self.maxhp * 100
 
+            # print("self.mp: " + str(self.mp))
+            # print("spell.cost: " + str(spell.cost))
+            # print("spell.type: " + str(spell.type))
+            # print("pct: " + str(pct))
+
             # Verifica se la spell è utilizzabile
             if self.mp >= spell.cost and (spell.type != "white" or pct <= 50):
                 return spell, magic_dmg

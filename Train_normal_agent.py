@@ -57,14 +57,20 @@ for episode in tqdm(range(n_episodes)):
     moves = 0
     while not done:
         action = agent.act(obs, True)
-        next_obs, reward, done, a_win, e_win, enemy_choise = env.step(action)
-    
+        # print(f"episode:{episode}, steps:{moves} - azione selezionata")
+        next_obs, reward, done, a_win, e_win, enemy_choice = env.step(action)
+        # print(f"episode:{episode}, steps:{moves} - step eseguito")
         agent.remember(obs, action, reward, next_obs, done)
+        # print(f"episode:{episode}, steps:{moves} - remember eseguito")
+
+        agent.replay(batch_size)
+        # print(f"episode:{episode}, steps:{moves} - replay eseguito")
+
         obs = next_obs
         total_reward += reward
         moves +=1
-        agent.replay(batch_size)
-        print(env.describe_game_state())
+       
+        # print(env.describe_game_state(enemy_choice))
 
     reward_per_episode.append(total_reward)
     step_per_episode.append(moves)

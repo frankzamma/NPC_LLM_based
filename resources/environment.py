@@ -17,10 +17,12 @@ thunder = Spell("Thunder", 30, 700, "black")
 blizzard = Spell("Blizzard", 35, 800, "black")
 meteor = Spell("Meteor", 40, 1000, "black")
 cura = Spell("Cura", 32, 1500, "white")
+MIN_SPELL_COST =  25
 
 potion = Item("Potion", "potion", "Heals 50 HP", 50)
 hielixer = Item("MegaElixer", "elixer", "Fully restores party's HP/MP", 9999)
 grenade = Item("Grenade", "attack", "Deals 500 damage", 500)
+
 
 
 # Environment setup
@@ -45,7 +47,7 @@ class BattleEnv:
             state.extend([0, 0])
         for enemy in self.enemies:
             state.extend([enemy.get_hp(), enemy.get_mp()])
-        print(f"State: {state}, Length: {len(state)}")
+        # print(f"State: {state}, Length: {len(state)}")
         return np.array(state)
 
     def get_action_size(self):
@@ -116,7 +118,8 @@ class BattleEnv:
                     player.hp = player.maxhp
                     player.mp = player.maxmp
                     reward += 50
-
+        
+        # print("Eseguita prima parte di Step!")
 
         # Check for battle ended
         if self.enemies[0].get_hp() <= 0:
@@ -125,23 +128,54 @@ class BattleEnv:
             agent_win = True
             return self.get_state(), reward, self.done, agent_win, enemy_win, "No action"
 
+        # print(len(self.enemies))
         # Enemy choise (Random)
         for enemy in self.enemies:
-            enemy_choice = random.choice(['attack', 'magic'])
+            # MODIFICA: attacco è la scelta di default
+            enemy_choice = 'attack'
+
+            # Se ha abbastanza Magic Point può scegliere anche magic
+            if enemy.get_mp() >= MIN_SPELL_COST:
+                enemy_choice = random.choice(['attack', 'magic'])
+
+            # print("Eseguita rand enemy_choice" + enemy_choice)
             if enemy_choice == 'attack':
                 target = random.choice(self.players)
+                # print("Eseguito random target")
                 enemy_dmg = enemy.generate_damage()
+                # print("Eseguito generate damage")
+
                 target.take_damage(enemy_dmg)
+                # print("Eseguito take damage")
+
             elif enemy_choice == 'magic':
-                spell, magic_dmg = enemy.choose_enemy_spell()
+                spell, magic_dmg = enemy.choose_enemy_spell() # Loop infinito se non ha abbastanza MP
+                # print("Eseguito choose enemy  spell")
+
                 enemy_choice = spell.name
                 if enemy.get_mp() >= spell.cost:
+                    # print("Entrato in penultimo if")
+
                     enemy.reduce_mp(spell.cost)
+                    # print("Eseguito reduce mp")
+
                     if spell.type == "white":
+                        # print("Entrato in ultimo if")
+
                         enemy.heal(magic_dmg)
+                        # print("Eseguito enemy heal")
+
                     else:
+                        # print("Entrato in ultimo else")
+
                         target = random.choice(self.players)
+                        # print("Selezionato target")
+
                         target.take_damage(magic_dmg)
+                        # print("Eseguito target take damage")
+
+            # print("Eseguita For per nemico!" + str(enemy))
+
 
         #  Check for battle ended
         if all(p.get_hp() <= 0 for p in self.players):
