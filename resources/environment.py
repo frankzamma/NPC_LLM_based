@@ -45,7 +45,7 @@ class BattleEnv:
             state.extend([0, 0])
         for enemy in self.enemies:
             state.extend([enemy.get_hp(), enemy.get_mp()])
-        print(f"State: {state}, Length: {len(state)}")
+        # print(f"State: {state}, Length: {len(state)}")
         return np.array(state)
 
     def get_action_size(self):
