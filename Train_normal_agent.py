@@ -8,7 +8,7 @@ from resources.environment import BattleEnv
 
 
 learning_rate = 0.01
-n_episodes = 10000
+n_episodes = 1
 start_epsilon = 1.0
 epsilon_decay = start_epsilon / (n_episodes / 2)  
 final_epsilon = 0.1
@@ -55,6 +55,8 @@ for episode in tqdm(range(n_episodes)):
 
     total_reward = 0
     moves = 0
+
+    print(type(obs))
     while not done:
         action = agent.act(obs, True)
         # print(f"episode:{episode}, steps:{moves} - azione selezionata")
