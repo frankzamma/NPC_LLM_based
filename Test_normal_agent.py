@@ -1,4 +1,5 @@
 from tqdm import tqdm
+import torch
 from Algorithms.Agent_DQN import DQNAgent
 from Algorithms.utils import salva_csv
 from resources.game import Person
@@ -8,7 +9,7 @@ from resources.environment import BattleEnv
 
 
 learning_rate = 0.01
-n_episodes = 1
+n_episodes = 50
 start_epsilon = 1.0
 epsilon_decay = start_epsilon / (n_episodes / 2)  
 final_epsilon = 0.1
@@ -42,12 +43,13 @@ reward_per_episode = []
 step_per_episode = []
 epsilon_value = []
 
-
 state_dim = obs.shape[0]
 action_dim = env.action_size
 agent = DQNAgent(state_dim, action_dim, lr=0.001, gamma=0.99, epsilon=1.0, epsilon_decay=0.995, buffer_size=10000)
 
-# TRAINING
+agent.model.load_state_dict(torch.load('models/model.pth'))
+
+# TESTING
 batch_size = 32
 for episode in tqdm(range(n_episodes)):
     obs = env.reset()
@@ -56,18 +58,19 @@ for episode in tqdm(range(n_episodes)):
     total_reward = 0
     moves = 0
 
-    print(type(obs))
     while not done:
-        action = agent.act(obs, True)
-        # print(f"episode:{episode}, steps:{moves} - azione selezionata")
+        action = agent.act(obs, False)
+        
         next_obs, reward, done, a_win, e_win, enemy_choice = env.step(action)
-        # print(f"episode:{episode}, steps:{moves} - step eseguito")
-        agent.remember(obs, action, reward, next_obs, done)
-        # print(f"episode:{episode}, steps:{moves} - remember eseguito")
+        
+        """ Non è necessario perché si riutilizzano esperienze passate per migliorare l'apprendimento.
+            In caso del testing, non si deve migliorare niente e si deve solo valutare senza influenzarlo 
+            con nuove esperienze"""
+        #agent.remember(obs, action, reward, next_obs, done)
 
-        agent.replay(batch_size)
-        # print(f"episode:{episode}, steps:{moves} - replay eseguito")
-
+        """Non si usa il replay nel test perché non si devono aggiornare più i pesi della rete"""
+        #agent.replay(batch_size)
+        
         obs = next_obs
         total_reward += reward
         moves +=1
@@ -80,8 +83,6 @@ for episode in tqdm(range(n_episodes)):
 
     print(f"Episode: {episode + 1}, Total Reward: {total_reward}")
 
-salva_csv(reward_per_episode, "Reward", "csv_reward_DQN.csv")
-salva_csv(step_per_episode, "Steps", "csv_steps_DQN.csv")
-salva_csv(epsilon_value, "Epsilon", "csv_epsilon_DQN.csv")
-
-agent.save("./models/model.pth" )
+salva_csv(reward_per_episode, "Reward", "[testing]csv_reward_DQN.csv")
+salva_csv(step_per_episode, "Steps", "[testing]csv_steps_DQN.csv")
+salva_csv(epsilon_value, "Epsilon", "[testing]csv_epsilon_DQN.csv")
