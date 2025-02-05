@@ -9,6 +9,7 @@ from NPC.GPT4mini_NPC import GPT4mini_NPC
 from Architecture.SeparateSuggestion import SeparateHelper
 import numpy as np
 import torch
+import os
 
 learning_rate = 0.01
 n_episodes = 2
@@ -16,6 +17,7 @@ start_epsilon = 1.0
 epsilon_decay = start_epsilon / (n_episodes / 2)  
 final_epsilon = 0.1
 
+PROB = 0.0
 
 # Spells and items setup
 fire = Spell("Fire", 25, 600, "black")
@@ -43,7 +45,13 @@ obs = env.reset()
 
 reward_per_episode = []
 step_per_episode = []
+agent_wins = []
+enemy_wins = []
 epsilon_value = []
+success_rate = []
+consigli_accettati = []
+total_agent_wins = 0
+
 
 npc =  GPT4mini_NPC()
 
@@ -68,8 +76,10 @@ for episode in tqdm(range(n_episodes)):
     done = False
 
     total_reward = 0
+    consigli_accettati_episode = 0
     moves = 0
     enemy_choice = "No action"
+
 
     action_agent = agent_base.act(obs_base, False)
     action_npc =  helper.get_suggestion(env.describe_game_state(enemy_choice))
@@ -79,10 +89,12 @@ for episode in tqdm(range(n_episodes)):
         actions = [action_agent, action_npc]
         selected_action =agent.act(obs, True)
         action = actions[selected_action]
+
         if selected_action == 0:
-            print("Ho scelto RL")
+            print("- Decisione Agente: ignorato consiglio\n\n")
         else:
-            print("Ho scelto LLM")
+            print("- Decisione Agente: accettato consiglio\n\n")
+            consigli_accettati_episode += 1
 
         # print(f"episode:{episode}, steps:{moves} - azione selezionata")
         next_obs_base, reward, done, a_win, e_win, enemy_choice = env.step(action)
@@ -91,7 +103,7 @@ for episode in tqdm(range(n_episodes)):
         action_npc =  helper.get_suggestion(env.describe_game_state(enemy_choice))
         next_obs =  np.append(next_obs_base, [action_agent, action_npc])
         # print(f"episode:{episode}, steps:{moves} - step eseguito")
-        agent.remember(obs, action_npc, reward, next_obs, done)
+        agent.remember(obs, selected_action, reward, next_obs, done)
         # print(f"episode:{episode}, steps:{moves} - remember eseguito")
 
         agent.replay(batch_size)
@@ -101,17 +113,40 @@ for episode in tqdm(range(n_episodes)):
         obs_base =  next_obs_base
         total_reward += reward
         moves +=1
-       
+
+        if done:
+            print(f"Episode: {episode}/{n_episodes}, Score: {total_reward}, Moves: {moves}, Epsilon: {agent.epsilon}")
+            if a_win:
+                agent_wins.append(1)
+                enemy_wins.append(0)
+                total_agent_wins += 1
+            else:
+                agent_wins.append(0)
+                enemy_wins.append(1)
+
+            success_rate.append(total_agent_wins / (episode + 1))
+            print("Vittorie agente: ", agent_wins.count(1), " Vittorie nemico: ", enemy_wins.count(1))       
         # print(env.describe_game_state(enemy_choice))
 
     reward_per_episode.append(total_reward)
     step_per_episode.append(moves)
     epsilon_value.append(agent.epsilon)
+    consigli_accettati.append(consigli_accettati_episode)
 
     print(f"Episode: {episode + 1}, Total Reward: {total_reward}")
 
-salva_csv(reward_per_episode, "Reward", "csv_reward_DQN.csv")
-salva_csv(step_per_episode, "Steps", "csv_steps_DQN.csv")
-salva_csv(epsilon_value, "Epsilon", "csv_epsilon_DQN.csv")
+dir = "./Results/Architecture3/GPT/Prob" + str(PROB)
 
-agent.save("./models/model_LLM_3.pth" )
+if not(os.path.exists(dir)):
+    os.mkdir(dir)
+
+
+salva_csv(reward_per_episode, "Reward", f"{dir}/csv_reward_GPT.csv")
+salva_csv(step_per_episode, "Steps", f"{dir}/csv_steps_GPT.csv")
+salva_csv(epsilon_value, "Epsilon", f"{dir}/csv_epsilon_GPT.csv")
+salva_csv(agent_wins, "Agent_Win", f"{dir}/csv_win_agent_GPT.csv")
+salva_csv(enemy_wins, "Enemy_Win", f"{dir}/csv_win_enemy_GPT.csv")
+salva_csv(success_rate, "Success_Rate", f"{dir}/csv_success_rate_GPT.csv")
+salva_csv(consigli_accettati, "Consigli_Accettati", f"{dir}/csv_consigli_accettati_GPT.csv")
+
+agent.save(f"{dir}/model_GPT_3.pth" )
