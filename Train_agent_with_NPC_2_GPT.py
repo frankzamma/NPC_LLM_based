@@ -85,7 +85,7 @@ for episode in tqdm(range(n_episodes)):
         next_obs, reward, done, a_win, e_win, enemy_choice = env.step(action)
 
         # print(f"episode:{episode}, steps:{moves} - step eseguito")
-        agent.remember(obs, action, reward, next_obs, done)
+        agent.remember(obs, action_npc, reward, next_obs, done)
         # print(f"episode:{episode}, steps:{moves} - remember eseguito")
 
         agent.replay(batch_size)

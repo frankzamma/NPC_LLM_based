@@ -97,4 +97,4 @@ salva_csv(reward_per_episode, "Reward", "csv_reward_DQN.csv")
 salva_csv(step_per_episode, "Steps", "csv_steps_DQN.csv")
 salva_csv(epsilon_value, "Epsilon", "csv_epsilon_DQN.csv")
 
-agent.save("./models/model.pth" )
+agent.save("./models/model_LLM_1.pth" )
