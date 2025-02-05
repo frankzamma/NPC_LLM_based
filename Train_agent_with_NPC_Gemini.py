@@ -88,7 +88,7 @@ for episode in tqdm(range(n_episodes)):
        
         print(env.describe_game_state(enemy_choice))
 
-        time.sleep(3)
+        #time.sleep(3)
 
     reward_per_episode.append(total_reward)
     step_per_episode.append(moves)
