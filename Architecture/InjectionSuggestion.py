@@ -12,10 +12,10 @@ class InjectionHelper:
 
         if prob == 0 or rand.random() < prob:
             suggestion =  self.helper.get_advice(description_of_game_state)
-            
+            print(f"- Description:\n{suggestion.description}\n")
             action = suggestion.action
 
-        np.append(obs, action)
+        obs = np.append(obs, action)
 
         return obs
 
