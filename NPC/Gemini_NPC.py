@@ -60,5 +60,5 @@ class Gemini_NPC(NPC):
         
 
         #print(message_dict["description"])
-        return response
+        return response.parsed
 
