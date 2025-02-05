@@ -8,12 +8,14 @@ class InjectionHelper:
         self.helper = npc
 
     def inject_suggestion(self, obs, description_of_game_state, prob = 0):
-        suggestion = 0
+        action = -1
 
         if prob == 0 or rand.random() < prob:
             suggestion =  self.helper.get_advice(description_of_game_state)
-        
-        np.append(obs, suggestion)
+            print(suggestion.description)
+            action = suggestion.action
+
+        np.append(obs, action)
 
         return obs
 
