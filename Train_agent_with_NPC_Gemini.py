@@ -86,7 +86,7 @@ for episode in tqdm(range(n_episodes)):
         total_reward += reward
         moves +=1
        
-        print(env.describe_game_state(enemy_choice))
+        #print(env.describe_game_state(enemy_choice))
 
         #time.sleep(3)
 
