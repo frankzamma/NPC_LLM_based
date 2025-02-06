@@ -16,6 +16,8 @@ start_epsilon = 1.0
 epsilon_decay = start_epsilon / (n_episodes / 2)  
 final_epsilon = 0.1
 
+#Probabilità che intervenga l'NPC
+PROB=0
 
 # Spells and items setup
 fire = Spell("Fire", 25, 600, "black")
@@ -96,8 +98,19 @@ for episode in tqdm(range(n_episodes)):
 
     print(f"Episode: {episode + 1}, Total Reward: {total_reward}")
 
-#salva_csv(reward_per_episode, "Reward", "csv_reward_DQN.csv")
-#salva_csv(step_per_episode, "Steps", "csv_steps_DQN.csv")
-#salva_csv(epsilon_value, "Epsilon", "csv_epsilon_DQN.csv")
 
-#agent.save("./models/model_Gemini.pth" )
+dir = "./Results/Architecture1/Gemini/Prob" + str(PROB)
+
+if not(os.path.exists(dir)):
+    os.mkdir(dir)
+
+salva_csv(reward_per_episode, "Reward", f"{dir}/csv_reward_Gemini.csv")
+salva_csv(step_per_episode, "Steps", f"{dir}/csv_steps_Geminicsv")
+salva_csv(epsilon_value, "Epsilon", f"{dir}/csv_epsilon_Gemini.csv")
+salva_csv(agent_wins, "Agent_Win", f"{dir}/csv_win_agent_Gemini.csv")
+salva_csv(enemy_wins, "Enemy_Win", f"{dir}/csv_win_enemy_Gemini.csv")
+salva_csv(success_rate, "Success_Rate", f"{dir}/csv_win_success_rate_Gemini.csv")
+salva_csv(consigli_accettati, "Consigli_Accettati", f"{dir}/csv_consigli_accettati_Gemini.csv")
+
+
+agent.save(f"{dir}/model_Gemini_1.pth" )
