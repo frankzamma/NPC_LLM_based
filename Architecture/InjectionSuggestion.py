@@ -7,7 +7,7 @@ class InjectionHelper:
     def __init__(self, npc : NPC):
         self.helper = npc
 
-    def inject_suggestion(self, obs, description_of_game_state, prob = 1):
+    def inject_suggestion(self, obs, description_of_game_state, prob):
         action = -1
 
         if prob == 1 or rand.random() < prob:
