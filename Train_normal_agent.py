@@ -1,3 +1,5 @@
+import os
+import datetime
 from tqdm import tqdm
 from Algorithms.Agent_DQN import DQNAgent
 from Algorithms.utils import salva_csv
@@ -40,7 +42,12 @@ obs = env.reset()
 
 reward_per_episode = []
 step_per_episode = []
+agent_wins = []
+enemy_wins = []
 epsilon_value = []
+success_rate = []
+total_agent_wins = 0
+
 
 
 state_dim = obs.shape[0]
@@ -71,6 +78,20 @@ for episode in tqdm(range(n_episodes)):
         obs = next_obs
         total_reward += reward
         moves +=1
+
+        if done:
+            print(f"Episode: {episode}/{n_episodes}, Score: {total_reward}, Moves: {moves}, Epsilon: {agent.epsilon}")
+            if a_win:
+                agent_wins.append(1)
+                enemy_wins.append(0)
+                total_agent_wins += 1
+            else:
+                agent_wins.append(0)
+                enemy_wins.append(1)
+
+            success_rate.append(total_agent_wins / (episode + 1))
+            print("Vittorie agente: ", agent_wins.count(1), " Vittorie nemico: ", enemy_wins.count(1))
+
        
         # print(env.describe_game_state(enemy_choice))
 
@@ -80,8 +101,17 @@ for episode in tqdm(range(n_episodes)):
 
     print(f"Episode: {episode + 1}, Total Reward: {total_reward}")
 
-salva_csv(reward_per_episode, "Reward", "csv_reward_DQN.csv")
-salva_csv(step_per_episode, "Steps", "csv_steps_DQN.csv")
-salva_csv(epsilon_value, "Epsilon", "csv_epsilon_DQN.csv")
+dir = "./Results/NormalAgent/Training/" + str(datetime.datetime.now())
 
-agent.save("./models/model.pth" )
+if not(os.path.exists(dir)):
+    os.mkdir(dir)
+
+
+salva_csv(reward_per_episode, "Reward", f"{dir}/csv_reward_normal.csv")
+salva_csv(step_per_episode, "Steps", f"{dir}/csv_steps_normal.csv")
+salva_csv(epsilon_value, "Epsilon", f"{dir}/csv_epsilon_normal.csv")
+salva_csv(agent_wins, "Agent_Win", f"{dir}/csv_win_agent_normal.csv")
+salva_csv(enemy_wins, "Enemy_Win", f"{dir}/csv_win_enemy_normal.csv")
+salva_csv(success_rate, "Success_Rate", f"{dir}/csv_win_success_rate_normal.csv")
+
+agent.save(f"{dir}/model.pth" )
