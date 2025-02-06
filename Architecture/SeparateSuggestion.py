@@ -6,10 +6,10 @@ class SeparateHelper:
     def __init__(self, npc : NPC):
         self.helper = npc
 
-    def get_suggestion(self, description_of_game_state, prob = 0):
+    def get_suggestion(self, description_of_game_state, prob = 1):
         action = -1
 
-        if prob == 0 or rand.random() < prob: 
+        if prob == 1 or rand.random() < prob: 
             suggestion =  self.helper.get_advice(description_of_game_state)
             print(f"- Description:\n{suggestion.description}\n")
             action = suggestion.action
