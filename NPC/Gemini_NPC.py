@@ -17,8 +17,7 @@ class Gemini_NPC(NPC):
 
         # genai.configure(api_key=self.key)
 
-        self.system_message = \
-                    "You are a game asstitant for player."\ 
+        self.system_message = "You are a game asstitant for player."\
                     "The battle involves a player and an enemy. Both player and enemy are characterised by:"\
                     "HP (health point), MP (magic point), Attack points, Defence points, Available magic points and Available items. "\
                     "For spells, the use of MP is necessary, while items have limited availability. "\
@@ -36,6 +35,7 @@ class Gemini_NPC(NPC):
                     "The suggestion has 2 part: description and action."\
                     "The description is a brief descritpion of proposed strategy, max 200 words."\
                     "Action is the action that you suggest."\
+                    "The strategy must regarding only 1 action."
                     
 
         
@@ -44,7 +44,7 @@ class Gemini_NPC(NPC):
         client = genai.Client(api_key=self.key)
 
         response = client.models.generate_content(
-            model='gemini-1.5-flash',
+            model='gemini-2.0-flash-001',
             contents=env_state,
             config=types.GenerateContentConfig(
                 system_instruction= self.system_message,
