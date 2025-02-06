@@ -8,16 +8,16 @@ from resources.environment import BattleEnv
 from NPC.Gemini_NPC import Gemini_NPC
 from Architecture.InjectionSuggestion import InjectionHelper
 import numpy as np
-import time
+import os
 
 learning_rate = 0.01
-n_episodes = 2
+n_episodes = 1
 start_epsilon = 1.0
 epsilon_decay = start_epsilon / (n_episodes / 2)  
 final_epsilon = 0.1
 
 #Probabilità che intervenga l'NPC
-PROB=0
+PROB=1 #NPC interviene sempre
 
 # Spells and items setup
 fire = Spell("Fire", 25, 600, "black")
@@ -45,7 +45,12 @@ obs = env.reset()
 
 reward_per_episode = []
 step_per_episode = []
+agent_wins = []
+enemy_wins = []
 epsilon_value = []
+success_rate = []
+consigli_accettati = []
+total_agent_wins = 0
 
 npc =  Gemini_NPC()
 
@@ -59,23 +64,32 @@ agent = DQNAgent(state_dim, action_dim, lr=0.001, gamma=0.99, epsilon=1.0, epsil
 # TRAINING
 batch_size = 32
 for episode in tqdm(range(n_episodes)):
+    #print("Qui")
     obs = env.reset()
     done = False
 
     total_reward = 0
     moves = 0
+    consigli_accettati_episode = 0
 
     obs = np.append(obs, 0)
 
 
-    print(type(obs))
+    #print(type(obs))
     while not done:
         action = agent.act(obs, True)
+
+        if action == obs[len(obs) - 1]:
+            consigli_accettati_episode += 1
+            print("- Decisione Agente: accettato consiglio\n\n")
+        else:
+            print("- Decisione Agente: ignorato consiglio\n\n")
+
         # print(f"episode:{episode}, steps:{moves} - azione selezionata")
         next_obs, reward, done, a_win, e_win, enemy_choice = env.step(action)
 
         describe_game_state = env.describe_game_state(enemy_choice)
-        next_obs = helper.inject_suggestion(next_obs, describe_game_state, 0.3)
+        next_obs = helper.inject_suggestion(next_obs, describe_game_state, PROB)
 
         # print(f"episode:{episode}, steps:{moves} - step eseguito")
         agent.remember(obs, action, reward, next_obs, done)
@@ -87,7 +101,21 @@ for episode in tqdm(range(n_episodes)):
         obs = next_obs
         total_reward += reward
         moves +=1
-       
+
+        if done:
+            print(f"Episode: {episode}/{n_episodes}, Score: {total_reward}, Moves: {moves}, Epsilon: {agent.epsilon}")
+            if a_win:
+                agent_wins.append(1)
+                enemy_wins.append(0)
+                total_agent_wins += 1
+            else:
+                agent_wins.append(0)
+                enemy_wins.append(1)
+
+            success_rate.append(total_agent_wins / (episode + 1))
+            print("Vittorie agente: ", agent_wins.count(1), " Vittorie nemico: ", enemy_wins.count(1))
+
+    
         #print(env.describe_game_state(enemy_choice))
 
         #time.sleep(3)
@@ -95,7 +123,7 @@ for episode in tqdm(range(n_episodes)):
     reward_per_episode.append(total_reward)
     step_per_episode.append(moves)
     epsilon_value.append(agent.epsilon)
-
+    consigli_accettati.append(consigli_accettati_episode)
     print(f"Episode: {episode + 1}, Total Reward: {total_reward}")
 
 
@@ -105,7 +133,7 @@ if not(os.path.exists(dir)):
     os.mkdir(dir)
 
 salva_csv(reward_per_episode, "Reward", f"{dir}/csv_reward_Gemini.csv")
-salva_csv(step_per_episode, "Steps", f"{dir}/csv_steps_Geminicsv")
+salva_csv(step_per_episode, "Steps", f"{dir}/csv_steps_Gemini.csv")
 salva_csv(epsilon_value, "Epsilon", f"{dir}/csv_epsilon_Gemini.csv")
 salva_csv(agent_wins, "Agent_Win", f"{dir}/csv_win_agent_Gemini.csv")
 salva_csv(enemy_wins, "Enemy_Win", f"{dir}/csv_win_enemy_Gemini.csv")
