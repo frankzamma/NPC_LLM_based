@@ -1,4 +1,6 @@
 import os
+import datetime
+import re
 from tqdm import tqdm
 from Algorithms.Agent_DQN import DQNAgent
 from Algorithms.utils import salva_csv
@@ -10,8 +12,10 @@ from NPC.GPT4mini_NPC import GPT4mini_NPC
 from Architecture.InjectionSuggestion import InjectionHelper
 import numpy as np
 
+
+
 learning_rate = 0.01
-n_episodes = 500
+n_episodes = 5
 start_epsilon = 1.0
 epsilon_decay = start_epsilon / (n_episodes / 2)  
 final_epsilon = 0.1
@@ -60,6 +64,16 @@ obs = np.append(obs, 0)
 state_dim = obs.shape[0]
 action_dim = env.action_size
 agent = DQNAgent(state_dim, action_dim, lr=0.001, gamma=0.99, epsilon=1.0, epsilon_decay=0.995, buffer_size=10000)
+
+
+dir = "./Results/Architecture1/GPT/Prob" + str(PROB)
+
+if not(os.path.exists(dir)):
+    os.mkdir(dir)
+
+dir = dir + "/" + re.sub("\.|:|-| ", "_",str(datetime.datetime.now()))
+if not(os.path.exists(dir)):
+    os.mkdir(dir)
 
 # TRAINING
 batch_size = 32
@@ -122,20 +136,32 @@ for episode in tqdm(range(n_episodes)):
     consigli_accettati.append(consigli_accettati_episode)
     print(f"Episode: {episode + 1}, Total Reward: {total_reward}")
 
+    if  episode % 2 == 0:
+        dir_episode = dir + "/Episode_" + str(episode)
 
-dir = "./Results/Architecture1/GPT/Prob" + str(PROB)
+        if not(os.path.exists(dir_episode)):
+            os.mkdir(dir_episode)
+        
+        salva_csv(reward_per_episode, "Reward", f"{dir_episode}/csv_reward_GPT.csv")
+        salva_csv(step_per_episode, "Steps", f"{dir_episode}/csv_steps_GPT.csv")
+        salva_csv(epsilon_value, "Epsilon", f"{dir_episode}/csv_epsilon_GPT.csv")
+        salva_csv(agent_wins, "Agent_Win", f"{dir_episode}/csv_win_agent_GPT.csv")
+        salva_csv(enemy_wins, "Enemy_Win", f"{dir_episode}/csv_win_enemy_GPT.csv")
+        salva_csv(success_rate, "Success_Rate", f"{dir_episode}/csv_win_success_rate_GPT.csv")
+        salva_csv(consigli_accettati, "Consigli_Accettati", f"{dir_episode}/csv_consigli_accettati_GPT.csv")
 
-if not(os.path.exists(dir)):
-    os.mkdir(dir)
+
+        agent.save(f"{dir_episode}/model_GPT_1.pth" )
 
 
-salva_csv(reward_per_episode, "Reward", f"{dir}/csv_reward_GPT.csv")
-salva_csv(step_per_episode, "Steps", f"{dir}/csv_steps_GPT.csv")
-salva_csv(epsilon_value, "Epsilon", f"{dir}/csv_epsilon_GPT.csv")
-salva_csv(agent_wins, "Agent_Win", f"{dir}/csv_win_agent_GPT.csv")
-salva_csv(enemy_wins, "Enemy_Win", f"{dir}/csv_win_enemy_GPT.csv")
-salva_csv(success_rate, "Success_Rate", f"{dir}/csv_win_success_rate_GPT.csv")
-salva_csv(consigli_accettati, "Consigli_Accettati", f"{dir}/csv_consigli_accettati_GPT.csv")
+
+salva_csv(reward_per_episode, "Reward", f"{dir}/csv_reward_GPT_FINAL.csv")
+salva_csv(step_per_episode, "Steps", f"{dir}/csv_steps_GPT_FINAL.csv")
+salva_csv(epsilon_value, "Epsilon", f"{dir}/csv_epsilon_GPT_FINAL.csv")
+salva_csv(agent_wins, "Agent_Win", f"{dir}/csv_win_agent_GPT_FINAL.csv")
+salva_csv(enemy_wins, "Enemy_Win", f"{dir}/csv_win_enemy_GPT_FINAL.csv")
+salva_csv(success_rate, "Success_Rate", f"{dir}/csv_win_success_rate_GPT_FINAL.csv")
+salva_csv(consigli_accettati, "Consigli_Accettati", f"{dir}/csv_consigli_accettati_GPT_FINAL.csv")
 
 
 agent.save(f"{dir}/model_GPT_1.pth" )
