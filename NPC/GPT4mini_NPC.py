@@ -34,6 +34,7 @@ class GPT4mini_NPC(NPC):
                     "The suggestion has 2 part: description and action."
                     "The description is a brief descritpion of proposed strategy, max 200 words."
                     "Action is the action that you suggest."
+                    "The strategies must regarding only one action"
                     }
         
 
