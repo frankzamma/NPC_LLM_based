@@ -11,13 +11,13 @@ from Architecture.InjectionSuggestion import InjectionHelper
 import numpy as np
 
 learning_rate = 0.01
-n_episodes = 2
+n_episodes = 500
 start_epsilon = 1.0
 epsilon_decay = start_epsilon / (n_episodes / 2)  
 final_epsilon = 0.1
 
 # Probabilità di intervento del NPC
-PROB = 0.0
+PROB = 1
 
 # Spells and items setup
 fire = Spell("Fire", 25, 600, "black")
@@ -87,7 +87,7 @@ for episode in tqdm(range(n_episodes)):
         next_obs, reward, done, a_win, e_win, enemy_choice = env.step(action)
 
         describe_game_state = env.describe_game_state(enemy_choice)
-        next_obs = helper.inject_suggestion(next_obs, describe_game_state)
+        next_obs = helper.inject_suggestion(next_obs, describe_game_state, PROB)
         
         # print(f"episode:{episode}, steps:{moves} - step eseguito")
         agent.remember(obs, action, reward, next_obs, done)
@@ -130,7 +130,7 @@ if not(os.path.exists(dir)):
 
 
 salva_csv(reward_per_episode, "Reward", f"{dir}/csv_reward_GPT.csv")
-salva_csv(step_per_episode, "Steps", f"{dir}/csv_steps_GPTcsv")
+salva_csv(step_per_episode, "Steps", f"{dir}/csv_steps_GPT.csv")
 salva_csv(epsilon_value, "Epsilon", f"{dir}/csv_epsilon_GPT.csv")
 salva_csv(agent_wins, "Agent_Win", f"{dir}/csv_win_agent_GPT.csv")
 salva_csv(enemy_wins, "Enemy_Win", f"{dir}/csv_win_enemy_GPT.csv")
