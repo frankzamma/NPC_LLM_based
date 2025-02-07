@@ -15,7 +15,7 @@ import numpy as np
 
 
 learning_rate = 0.01
-n_episodes = 5
+n_episodes = 1500
 start_epsilon = 1.0
 epsilon_decay = start_epsilon / (n_episodes / 2)  
 final_epsilon = 0.1
@@ -136,7 +136,7 @@ for episode in tqdm(range(n_episodes)):
     consigli_accettati.append(consigli_accettati_episode)
     print(f"Episode: {episode + 1}, Total Reward: {total_reward}")
 
-    if  episode % 2 == 0:
+    if  episode % 50 == 0:
         dir_episode = dir + "/Episode_" + str(episode)
 
         if not(os.path.exists(dir_episode)):
