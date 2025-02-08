@@ -13,15 +13,13 @@ from Architecture.InjectionSuggestion import InjectionHelper
 import numpy as np
 
 
-
-learning_rate = 0.01
-n_episodes = 1500
+n_episodes = 1200
 start_epsilon = 1.0
 epsilon_decay = start_epsilon / (n_episodes / 2)  
 final_epsilon = 0.1
 
 # Probabilità di intervento del NPC
-PROB = 1
+PROB = 0.3
 
 # Spells and items setup
 fire = Spell("Fire", 25, 600, "black")
@@ -54,6 +52,7 @@ enemy_wins = []
 epsilon_value = []
 success_rate = []
 consigli_accettati = []
+consigli_dati = []
 total_agent_wins = 0
 
 npc =  GPT4mini_NPC()
@@ -84,9 +83,9 @@ for episode in tqdm(range(n_episodes)):
     total_reward = 0
     moves = 0
     consigli_accettati_episode = 0
+    consigli_dati_episode = 0
 
     obs = np.append(obs, -1)
-
 
     while not done:
         action = agent.act(obs, True)
@@ -95,7 +94,11 @@ for episode in tqdm(range(n_episodes)):
             consigli_accettati_episode += 1
             print("- Decisione Agente: accettato consiglio\n\n")
         else:
-            print("- Decisione Agente: ignorato consiglio\n\n")
+            if obs[len(obs) -1] == -1:
+                print("Consiglio NPC non dato\n\n")
+            else:
+                consigli_dati_episode += 1
+                print("- Decisione Agente: ignorato consiglio\n\n")
 
         # print(f"episode:{episode}, steps:{moves} - azione selezionata")
         next_obs, reward, done, a_win, e_win, enemy_choice = env.step(action)
@@ -134,6 +137,7 @@ for episode in tqdm(range(n_episodes)):
     step_per_episode.append(moves)
     epsilon_value.append(agent.epsilon)
     consigli_accettati.append(consigli_accettati_episode)
+    consigli_dati.append(consigli_dati_episode)
     print(f"Episode: {episode + 1}, Total Reward: {total_reward}")
 
     if  episode % 50 == 0:
@@ -149,6 +153,7 @@ for episode in tqdm(range(n_episodes)):
         salva_csv(enemy_wins, "Enemy_Win", f"{dir_episode}/csv_win_enemy_GPT.csv")
         salva_csv(success_rate, "Success_Rate", f"{dir_episode}/csv_win_success_rate_GPT.csv")
         salva_csv(consigli_accettati, "Consigli_Accettati", f"{dir_episode}/csv_consigli_accettati_GPT.csv")
+        salva_csv(consigli_dati, "Consigli_dati", f"{dir_episode}/csv_consigli_dati_GPT.csv")
 
 
         agent.save(f"{dir_episode}/model_GPT_1.pth" )
@@ -162,6 +167,7 @@ salva_csv(agent_wins, "Agent_Win", f"{dir}/csv_win_agent_GPT_FINAL.csv")
 salva_csv(enemy_wins, "Enemy_Win", f"{dir}/csv_win_enemy_GPT_FINAL.csv")
 salva_csv(success_rate, "Success_Rate", f"{dir}/csv_win_success_rate_GPT_FINAL.csv")
 salva_csv(consigli_accettati, "Consigli_Accettati", f"{dir}/csv_consigli_accettati_GPT_FINAL.csv")
+salva_csv(consigli_dati, "Consigli_dati", f"{dir}/csv_consigli_dati_GPT_FINAL.csv")
 
 
 agent.save(f"{dir}/model_GPT_1.pth" )
