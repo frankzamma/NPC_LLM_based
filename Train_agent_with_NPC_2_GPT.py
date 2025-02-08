@@ -10,14 +10,15 @@ from Architecture.SeparateSuggestion import SeparateHelper
 import numpy as np
 import torch
 import os
+import re
+import datetime
 
-learning_rate = 0.01
-n_episodes = 2
+n_episodes = 1200
 start_epsilon = 1.0
 epsilon_decay = start_epsilon / (n_episodes / 2)  
 final_epsilon = 0.1
 
-PROB = 0.0
+PROB = 1.0
 
 # Spells and items setup
 fire = Spell("Fire", 25, 600, "black")
@@ -61,7 +62,7 @@ state_dim = obs.shape[0]
 action_dim = env.action_size
 
 agent_base = DQNAgent(state_dim, action_dim, lr=0.001, gamma=0.99, epsilon=1.0, epsilon_decay=0.995, buffer_size=10000)
-agent_base.model.load_state_dict(torch.load('models/model.pth'))
+agent_base.model.load_state_dict(torch.load('./Results/NormalAgent/Training/2025_02_06_11_13_16/model.pth'))
 
 action_dim_agent = 2
 agent = DQNAgent(state_dim, action_dim_agent, lr=0.001, gamma=0.99, epsilon=1.0, epsilon_decay=0.995, buffer_size=10000)
