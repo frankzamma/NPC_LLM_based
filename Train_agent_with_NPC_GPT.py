@@ -19,7 +19,7 @@ epsilon_decay = start_epsilon / (n_episodes / 2)
 final_epsilon = 0.1
 
 # Probabilità di intervento del NPC
-PROB = 0.3
+PROB = 0.5
 
 # Spells and items setup
 fire = Spell("Fire", 25, 600, "black")
