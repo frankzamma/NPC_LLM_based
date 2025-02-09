@@ -20,7 +20,8 @@ final_epsilon = 0.1
 
 #Probabilità che intervenga l'NPC
 #PROB=1 NPC interviene sempre
-PROB = 0.3
+#PROB = 0.3
+PROB = 0.5
 
 # Spells and items setup
 fire = Spell("Fire", 25, 600, "black")
