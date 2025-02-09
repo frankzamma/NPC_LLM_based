@@ -40,17 +40,20 @@ class GPT4mini_NPC(NPC):
 
 
     def get_advice(self, env_state):
-        completion = self.client.beta.chat.completions.parse(
-            model="gpt-4o-mini",
-            messages=[
-                self.system_message, 
-                {"role": "user", 
-                 "content": env_state}],
-            response_format=Suggestion
-        )
-        suggestion = completion.choices[0].message.parsed
-        # message_dict = json.loads(message)
+        while True: 
+            try:
+                completion = self.client.beta.chat.completions.parse(
+                        model="gpt-4o-mini",
+                        messages=[ self.system_message, 
+                        {"role": "user", "content": env_state}],
+                        response_format=Suggestion
+                )
+                suggestion = completion.choices[0].message.parsed
+                # message_dict = json.loads(message)
 
-        # print(message_dict["description"])
-        return suggestion #message_dict["action"]
+                # print(message_dict["description"])
+                return suggestion #message_dict["action"]
+            except:
+                print("Errore di lunghezza, riprovo!")
+        
 
