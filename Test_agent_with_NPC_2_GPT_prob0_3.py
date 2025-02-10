@@ -92,7 +92,7 @@ for episode in tqdm(range(n_episodes)):
     enemy_choice = "No action"
     while not done:
         action_agent = agent_base.act(obs, False)
-        action_npc =  helper.get_suggestion(env.describe_game_state(enemy_choice))
+        action_npc =  helper.get_suggestion(env.describe_game_state(enemy_choice), PROB)
         actions = [action_agent, action_npc]
         selected_action = 0
         
