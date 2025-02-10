@@ -68,7 +68,7 @@ action_dim_agent = 2
 agent = DQNAgent(state_dim, action_dim_agent, lr=0.001, gamma=0.99, epsilon=1.0, epsilon_decay=0.995, buffer_size=10000)
 
 
-dir = "./Results/Architecture2/Gemini/Training"
+dir = "./Results/Architecture2/Gemini/Prob" + str(PROB)
 
 if not(os.path.exists(dir)):
     os.mkdir(dir)
