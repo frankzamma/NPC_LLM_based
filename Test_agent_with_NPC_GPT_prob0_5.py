@@ -109,13 +109,6 @@ for episode in tqdm(range(n_episodes)):
         describe_game_state = env.describe_game_state(enemy_choice)
         next_obs = helper.inject_suggestion(next_obs, describe_game_state, PROB)
         
-        # print(f"episode:{episode}, steps:{moves} - step eseguito")
-        agent.remember(obs, action, reward, next_obs, done)
-        # print(f"episode:{episode}, steps:{moves} - remember eseguito")
-
-        agent.replay(batch_size)
-        # print(f"episode:{episode}, steps:{moves} - replay eseguito")
-
         obs = next_obs
         total_reward += reward
         moves +=1
