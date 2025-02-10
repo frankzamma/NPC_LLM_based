@@ -65,7 +65,7 @@ state_dim = obs.shape[0]
 action_dim = env.action_size
 
 agent = DQNAgent(state_dim, action_dim, lr=0.001, gamma=0.99, epsilon=1.0, epsilon_decay=0.995, buffer_size=10000)
-agent.model.load_state_dict(torch.load('./Results/Architecture1/Gemini/Prob1/2025_02_07_19_13_16_970620/Episode_1150/model_Gemini_1.pth'))
+agent.model.load_state_dict(torch.load('./Results/Architecture1/Gemini/Prob1/2025_02_07_19_13_16_970620/model_Gemini_1.pth'))
 
 
 dir = "./Results/Architecture1/Gemini/Prob" + str(PROB) + "/testing"
