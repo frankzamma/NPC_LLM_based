@@ -93,6 +93,9 @@ for episode in tqdm(range(n_episodes)):
     while not done:
         action = agent.act(obs, False)
 
+        if obs[len(obs) -1] != -1:
+            consigli_dati_episode +=1
+
         if action == obs[len(obs) - 1]:
             consigli_accettati_episode += 1
             print("- Decisione Agente: accettato consiglio\n\n")
@@ -100,7 +103,6 @@ for episode in tqdm(range(n_episodes)):
             if obs[len(obs) -1] == -1:
                 print("Consiglio NPC non dato\n\n")
             else:
-                consigli_dati_episode += 1
                 print("- Decisione Agente: ignorato consiglio\n\n")
 
         # print(f"episode:{episode}, steps:{moves} - azione selezionata")
