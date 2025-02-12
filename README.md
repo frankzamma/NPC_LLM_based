@@ -1,5 +1,5 @@
 # NPC_LLM_based
-This  repository contains a LLM based NPC with two different architectures
+This  repository contains a LLM based NPC with two different architectures.
 This project was developed for the course of "Artificial Intelligence" at University Of Salerno.
 
 ## How To Run the project
